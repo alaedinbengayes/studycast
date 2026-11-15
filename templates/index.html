@@ -3,212 +3,394 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>StudyCast · Exam Score Estimator</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><circle cx='24' cy='24' r='24' fill='%2312355b'/><path d='M8 20 24 12l16 8-16 8z' fill='white'/><path d='M15 24v7c0 2 4.5 4 9 4s9-2 9-4v-7l-9 4.5z' fill='white'/></svg>">
+<title>StudyCast · Exam Score Estimator | University of Khorfakkan</title>
+<meta name="description" content="Estimate your next exam score from your study habits. A CSCI104 Introduction to AI student project, University of Khorfakkan.">
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --navy:#12355b; --teal:#0f8b8d; --teal-soft:#f2fbfb; --error:#c62828; --error-soft:#fff5f5;
-          --text:#1d2a38; --muted:#5b6b7c; --line:#d5dee7; --field:#f3f6f9; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; color:var(--text); background:#fff; line-height:1.5; }
-  .wrap { max-width:1080px; margin:0 auto; padding:0 16px; }
-  header { background:linear-gradient(120deg,var(--navy),var(--teal)); color:#fff; }
-  .bar { display:flex; align-items:center; justify-content:space-between; gap:12px 16px; padding:16px; flex-wrap:wrap; }
-  .brand svg { flex-shrink:0; }
-  .brand { display:flex; align-items:center; gap:12px; color:#fff; text-decoration:none; }
-  .brand h1 { font-size:1.45rem; margin:0; line-height:1.15; }
-  .brand p { margin:2px 0 0; font-size:.88rem; opacity:.9; }
-  nav a { color:#fff; text-decoration:none; margin-left:18px; font-weight:600; font-size:.95rem; opacity:.9; }
-  nav a:hover, nav a:focus { opacity:1; text-decoration:underline; }
-  nav a:first-child { margin-left:0; }
-  main section { padding:28px 0 8px; }
-  .intro { color:var(--muted); margin:0 0 18px; }
-  .grid { display:grid; grid-template-columns: 3fr 2fr; gap:28px; align-items:start; }
-  form { border:1px solid var(--line); border-radius:14px; padding:20px; }
-  form h2 { font-size:1.05rem; margin:0 0 14px; color:var(--navy); }
-  .fields { display:grid; grid-template-columns:1fr 1fr; gap:4px 18px; }
-  .field { margin-bottom:10px; }
-  .field.full { grid-column:1 / -1; }
-  label { display:block; font-weight:600; font-size:.92rem; margin-bottom:5px; }
-  input, select { width:100%; font:inherit; padding:10px 12px; border:2px solid transparent; border-radius:9px; background:var(--field); color:var(--text); }
-  input:focus, select:focus { outline:none; border-color:var(--teal); background:#fff; }
-  .hint { font-size:.8rem; color:var(--muted); margin-top:4px; }
-  .err { display:none; font-size:.83rem; color:var(--error); margin-top:4px; }
-  .field.invalid label { color:var(--error); }
-  .field.invalid input, .field.invalid select { border-color:var(--error); background:var(--error-soft); }
-  .field.invalid .err { display:block; }
-  button { margin-top:8px; width:100%; font:inherit; font-weight:700; font-size:1rem; color:#fff; background:var(--teal); border:0; border-radius:10px; padding:12px 18px; cursor:pointer; }
-  button:hover { background:var(--navy); }
-  button:disabled { opacity:.7; cursor:progress; }
-  .result { border-radius:14px; padding:22px; }
-  .result h2 { font-size:1.1rem; margin:0 0 8px; color:var(--navy); }
-  .result.empty { border:2px dashed #c9d4df; color:var(--muted); }
-  .result.ok { border:2px solid var(--teal); background:var(--teal-soft); }
-  .result.fail, .result.invalid { border:2px solid var(--error); background:var(--error-soft); color:var(--error); }
-  .score { font-size:3.4rem; font-weight:800; color:var(--navy); line-height:1.05; }
-  .score small { font-size:1.15rem; font-weight:500; color:var(--muted); }
-  .note { margin:.7rem 0 0; font-size:.95rem; }
-  .warn { margin-top:12px; padding:10px 12px; border-radius:9px; background:#fff8e1; color:#7a5a00; font-size:.9rem; }
-  table { border-collapse:collapse; margin:10px 0; }
-  td, th { border:1px solid var(--line); padding:6px 12px; text-align:left; font-size:.95rem; }
-  th { background:var(--teal-soft); }
-  h3 { color:var(--navy); margin:0 0 8px; font-size:1.3rem; }
-  footer { margin-top:28px; padding:18px 0 28px; border-top:1px solid var(--line); color:var(--muted); font-size:.85rem; }
-  a { color:#0f6d70; }
-  @media (max-width: 760px) {
-    .grid, .fields { grid-template-columns:1fr; }
-    nav a { margin-left:12px; font-size:.9rem; }
-    .brand h1 { font-size:1.2rem; }
+  :root {
+    --ukf:#0e538c; --ukf-deep:#0a2f55; --ukf-ink:#08203b; --ukf-soft:#eaf2fa; --ukf-line:#d6e3f0;
+    --gold:#d99a2b; --gold-soft:#fff5e3;
+    --ok:#127a5b; --ok-soft:#e8f6f0;
+    --error:#c0392b; --error-soft:#fdf0ee;
+    --text:#15243a; --muted:#5b6b80; --field:#f4f7fb; --white:#fff;
+    --radius:16px; --shadow:0 18px 50px -20px rgba(8,32,59,.35);
   }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  #predict, #how, #about { scroll-margin-top:84px; }
+  body { margin:0; font-family:"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif; color:var(--text); background:#f7f9fc; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  a { color:var(--ukf); }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 20px; }
+  .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+  /* ---------- top bar ---------- */
+  .topbar { background:var(--white); border-bottom:1px solid var(--ukf-line); position:sticky; top:0; z-index:10; }
+  .topbar .wrap { display:flex; align-items:center; justify-content:space-between; gap:12px 20px; padding-top:10px; padding-bottom:10px; flex-wrap:wrap; }
+  .brand { display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--ukf-ink); min-width:0; }
+  .brand img { width:48px; height:48px; flex-shrink:0; }
+  .brand-text { display:flex; flex-direction:column; line-height:1.2; min-width:0; }
+  .brand-uni { font-weight:800; font-size:1rem; color:var(--ukf); letter-spacing:.01em; }
+  .brand-college { font-size:.78rem; color:var(--muted); }
+  nav { display:flex; align-items:center; gap:6px; }
+  nav a { text-decoration:none; color:var(--ukf-ink); font-weight:600; font-size:.92rem; padding:8px 12px; border-radius:999px; }
+  nav a:hover, nav a:focus-visible { background:var(--ukf-soft); color:var(--ukf); outline:none; }
+  nav a.cta { background:var(--ukf); color:#fff; }
+  nav a.cta:hover, nav a.cta:focus-visible { background:var(--ukf-deep); color:#fff; }
+
+  /* ---------- hero ---------- */
+  .hero { background:
+            radial-gradient(1200px 400px at 85% -10%, rgba(217,154,43,.22), transparent 60%),
+            radial-gradient(900px 500px at 0% 120%, rgba(255,255,255,.08), transparent 60%),
+            linear-gradient(135deg, var(--ukf-ink) 0%, var(--ukf-deep) 45%, var(--ukf) 100%);
+          color:#fff; padding:56px 0 132px; position:relative; overflow:hidden; }
+  .hero::after { content:""; position:absolute; right:-80px; top:-60px; width:420px; height:420px; background:url("/static/ukf-logo.png") center/contain no-repeat; opacity:.06; filter:brightness(10); pointer-events:none; }
+  .eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:.8rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#ffe2ad; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16); padding:6px 12px; border-radius:999px; }
+  .hero h1 { font-size:clamp(2rem, 4.4vw, 3.2rem); line-height:1.08; margin:16px 0 14px; letter-spacing:-.02em; max-width:720px; }
+  .hero h1 span { color:#ffd38a; }
+  .hero p.lead { font-size:1.08rem; color:#d7e4f2; max-width:600px; margin:0 0 26px; }
+  .stats { display:flex; flex-wrap:wrap; gap:12px; }
+  .stat { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:10px 16px; min-width:140px; }
+  .stat b { display:block; font-size:1.35rem; color:#fff; }
+  .stat small { color:#c3d4e6; font-size:.8rem; }
+
+  /* ---------- predictor card ---------- */
+  .predictor { margin-top:-96px; position:relative; z-index:2; }
+  .card { background:var(--white); border-radius:22px; box-shadow:var(--shadow); border:1px solid var(--ukf-line); display:grid; grid-template-columns:1.25fr 1fr; overflow:hidden; }
+  form { padding:28px; }
+  .card-title { font-size:1.15rem; margin:0 0 4px; color:var(--ukf-ink); }
+  .card-sub { margin:0 0 20px; color:var(--muted); font-size:.9rem; }
+  .fields { display:grid; grid-template-columns:1fr 1fr; gap:6px 18px; }
+  .field { margin-bottom:12px; }
+  .field.full { grid-column:1 / -1; }
+  .field > label, .field legend { display:block; font-weight:700; font-size:.88rem; margin-bottom:6px; color:var(--ukf-ink); padding:0; }
+  fieldset { border:0; margin:0; padding:0; min-width:0; }
+  .input-wrap { position:relative; }
+  .input-wrap input { width:100%; font:inherit; font-size:1rem; padding:12px 86px 12px 14px; border:2px solid transparent; border-radius:12px; background:var(--field); color:var(--text); transition:border-color .15s, background .15s; -moz-appearance:textfield; }
+  .input-wrap input::-webkit-outer-spin-button, .input-wrap input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  .input-wrap input:focus { outline:none; border-color:var(--ukf); background:#fff; box-shadow:0 0 0 4px rgba(14,83,140,.12); }
+  .unit { position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:.75rem; font-weight:700; color:var(--ukf); background:var(--ukf-soft); padding:4px 8px; border-radius:8px; pointer-events:none; }
+  .hint { font-size:.78rem; color:var(--muted); margin-top:5px; }
+  .err { display:none; font-size:.82rem; font-weight:600; color:var(--error); margin-top:5px; }
+  .field.invalid > label, .field.invalid legend { color:var(--error); }
+  .field.invalid .input-wrap input { border-color:var(--error); background:var(--error-soft); }
+  .field.invalid .segments { border-color:var(--error); background:var(--error-soft); }
+  .field.invalid .err { display:block; }
+
+  .segments { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; background:var(--field); padding:5px; border-radius:12px; border:2px solid transparent; }
+  .segments input { position:absolute; opacity:0; pointer-events:none; }
+  .segments label { text-align:center; padding:10px 6px; border-radius:9px; font-weight:700; font-size:.92rem; cursor:pointer; color:var(--muted); transition:background .15s, color .15s; user-select:none; }
+  .segments label:hover { color:var(--ukf); }
+  .segments input:checked + label { background:#fff; color:var(--ukf); box-shadow:0 2px 8px rgba(8,32,59,.12); }
+  .segments input:focus-visible + label { outline:3px solid rgba(14,83,140,.35); outline-offset:1px; }
+
+  button[type=submit] { margin-top:10px; width:100%; font:inherit; font-weight:800; font-size:1.02rem; letter-spacing:.01em; color:#fff; background:linear-gradient(135deg, var(--ukf), var(--ukf-deep)); border:0; border-radius:12px; padding:15px 18px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:transform .1s, box-shadow .15s; box-shadow:0 10px 24px -10px rgba(14,83,140,.7); }
+  button[type=submit]:hover { box-shadow:0 14px 28px -10px rgba(14,83,140,.85); }
+  button[type=submit]:active { transform:translateY(1px); }
+  button[type=submit]:focus-visible { outline:3px solid var(--gold); outline-offset:2px; }
+  button[type=submit]:disabled { opacity:.75; cursor:progress; }
+  .spinner { width:18px; height:18px; border:3px solid rgba(255,255,255,.35); border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite; display:none; }
+  button.loading .spinner { display:inline-block; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* ---------- result panel ---------- */
+  .result { background:linear-gradient(180deg, var(--ukf-soft), #fff 70%); border-left:1px solid var(--ukf-line); padding:28px; display:flex; flex-direction:column; }
+  .result h2 { font-size:1.15rem; margin:0 0 16px; color:var(--ukf-ink); }
+  .state { flex:1; display:flex; flex-direction:column; justify-content:center; }
+  .empty-art { width:120px; height:120px; margin:6px auto 16px; border-radius:50%; border:10px solid var(--ukf-line); display:grid; place-items:center; color:var(--ukf-line); font-weight:800; font-size:2rem; }
+  .empty p, .fail p, .invalid p { text-align:center; margin:0; }
+  .empty p { color:var(--muted); }
+  .gauge { position:relative; width:200px; height:200px; margin:0 auto 8px; }
+  .gauge svg { transform:rotate(-90deg); }
+  .gauge .track { stroke:var(--ukf-line); }
+  .gauge .bar { stroke:url(#g); stroke-linecap:round; transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1); }
+  .gauge-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .score { font-size:3.1rem; font-weight:800; color:var(--ukf-ink); line-height:1; letter-spacing:-.02em; }
+  .score-unit { font-size:.9rem; color:var(--muted); font-weight:600; margin-top:6px; }
+  .pill { display:inline-block; margin:6px auto 12px; font-size:.82rem; font-weight:700; padding:5px 12px; border-radius:999px; }
+  .pill.up { background:var(--ok-soft); color:var(--ok); }
+  .pill.down { background:var(--gold-soft); color:#8a5a00; }
+  .facts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px; }
+  .fact { background:#fff; border:1px solid var(--ukf-line); border-radius:12px; padding:10px 12px; }
+  .fact small { display:block; color:var(--muted); font-size:.75rem; }
+  .fact b { color:var(--ukf-ink); }
+  .warn { margin-top:12px; padding:10px 12px; border-radius:10px; background:var(--gold-soft); color:#7a5000; font-size:.85rem; }
+  .alert-icon { width:56px; height:56px; border-radius:50%; margin:0 auto 14px; display:grid; place-items:center; font-weight:800; font-size:1.6rem; }
+  .fail .alert-icon, .invalid .alert-icon { background:var(--error-soft); color:var(--error); }
+  .fail p, .invalid p { color:var(--error); font-weight:600; }
+  .fail p + p, .invalid p + p { color:var(--muted); font-weight:500; font-size:.88rem; margin-top:6px; }
+
+  /* ---------- content sections ---------- */
+  section.block { padding:72px 0 8px; }
+  .kicker { font-size:.78rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin:0 0 6px; }
+  section.block h2 { font-size:clamp(1.5rem, 2.6vw, 2rem); margin:0 0 10px; color:var(--ukf-ink); letter-spacing:-.01em; }
+  .section-lead { color:var(--muted); max-width:680px; margin:0 0 28px; }
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .step { background:#fff; border:1px solid var(--ukf-line); border-radius:var(--radius); padding:22px; }
+  .step-num { width:36px; height:36px; border-radius:10px; background:var(--ukf-soft); color:var(--ukf); font-weight:800; display:grid; place-items:center; margin-bottom:12px; }
+  .step h3 { margin:0 0 6px; font-size:1.02rem; color:var(--ukf-ink); }
+  .step p { margin:0; color:var(--muted); font-size:.92rem; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:18px; }
+  .metric { background:var(--ukf-ink); color:#fff; border-radius:var(--radius); padding:18px; }
+  .metric b { display:block; font-size:1.6rem; }
+  .metric small { color:#b8cbe0; }
+  .metric.hl { background:linear-gradient(135deg, var(--ukf), var(--ukf-deep)); }
+  .note-box { margin-top:18px; background:#fff; border:1px solid var(--ukf-line); border-left:4px solid var(--gold); border-radius:12px; padding:14px 18px; color:var(--text); font-size:.94rem; }
+  .about { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .about .step a { font-weight:600; }
+
+  footer { margin-top:72px; background:var(--ukf-ink); color:#b8cbe0; padding:30px 0; font-size:.86rem; }
+  footer .wrap { display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:space-between; }
+  .foot-brand { display:flex; align-items:center; gap:12px; }
+  .foot-brand img { width:44px; height:44px; background:#fff; border-radius:50%; padding:3px; }
+  footer b { color:#fff; }
+
+  @media (max-width: 900px) {
+    .card { grid-template-columns:1fr; }
+    .result { border-left:0; border-top:1px solid var(--ukf-line); }
+    .steps, .about { grid-template-columns:1fr; }
+    .metrics { grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .wrap { padding:0 16px; }
+    .fields { grid-template-columns:1fr; }
+    .brand img { width:40px; height:40px; }
+    .brand-college { display:none; }
+    nav { width:100%; justify-content:space-between; }
+    nav a { padding:7px 10px; font-size:.86rem; }
+    .hero { padding:36px 0 112px; }
+    .stats { flex-wrap:nowrap; gap:8px; }
+    .stat { min-width:0; flex:1 1 0; padding:8px 10px; }
+    .stat b { font-size:1.05rem; }
+    .stat small { font-size:.72rem; }
+    form, .result { padding:20px; }
+    .predictor { margin-top:-84px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } .gauge .bar, .spinner { transition:none; animation:none; } }
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap bar">
-    <a class="brand" href="#predict" aria-label="StudyCast home">
-      <svg width="46" height="46" viewBox="0 0 48 48" aria-hidden="true">
-        <circle cx="24" cy="24" r="23" fill="#ffffff22" stroke="#fff" stroke-width="2"/>
-        <path d="M8 20 24 12l16 8-16 8z" fill="#fff"/><path d="M15 24v7c0 2 4.5 4 9 4s9-2 9-4v-7l-9 4.5z" fill="#fff"/>
-        <path d="M38 21v9" stroke="#fff" stroke-width="2"/><circle cx="38" cy="31" r="2" fill="#fff"/>
-      </svg>
-      <div><h1>StudyCast · Exam Score Estimator</h1><p>University of Khorfakkan · CSCI104 Intro to AI project</p></div>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#predict" aria-label="StudyCast, University of Khorfakkan">
+      <img src="/static/ukf-logo.png" alt="University of Khorfakkan logo" width="48" height="48">
+      <span class="brand-text">
+        <span class="brand-uni">University of Khorfakkan</span>
+        <span class="brand-college">College of Computing and Intelligent Systems · CSCI104</span>
+      </span>
     </a>
-    <nav aria-label="Main"><a href="#predict">Predict</a><a href="#how">How it works</a><a href="#about">About</a></nav>
+    <nav aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#about">About</a>
+      <a href="#predict" class="cta">Predict</a>
+    </nav>
   </div>
 </header>
 
-<main class="wrap">
-  <section id="predict">
-    <p class="intro">Enter your study profile to estimate your next exam score. Use realistic or fictional values; nothing is saved.</p>
-    <div class="grid">
+<main>
+  <div class="hero">
+    <div class="wrap">
+      <span class="eyebrow">StudyCast · Exam Score Estimator</span>
+      <h1>See where your study habits <span>are taking you.</span></h1>
+      <p class="lead">Enter five things you already know about your studying, and a machine-learning model trained on 6,606 student records will estimate your next exam score.</p>
+      <div class="stats" aria-label="Model facts">
+        <div class="stat"><b>±1.1 pts</b><small>typical error</small></div>
+        <div class="stat"><b>6,606</b><small>student records</small></div>
+        <div class="stat"><b>87%</b><small>within ±2 points</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap predictor" id="predict">
+    <div class="card">
       <form id="form" novalidate>
-        <h2>Your study profile</h2>
+        <h2 class="card-title">Your study profile</h2>
+        <p class="card-sub">Use realistic or fictional values. Nothing is saved.</p>
         <div class="fields">
           <div class="field" data-name="Hours_Studied">
             <label for="Hours_Studied">Study hours per week</label>
-            <input id="Hours_Studied" name="Hours_Studied" type="number" inputmode="decimal" step="any" placeholder="e.g. 20">
-            <div class="hint">Range 0–60 hours/week</div><div class="err" role="alert"></div>
+            <div class="input-wrap"><input id="Hours_Studied" name="Hours_Studied" type="number" inputmode="decimal" step="any" placeholder="e.g. 20" aria-describedby="h-hours e-hours"><span class="unit">hrs / wk</span></div>
+            <div class="hint" id="h-hours">Accepted range 0–60</div><div class="err" id="e-hours" role="alert"></div>
           </div>
           <div class="field" data-name="Attendance">
-            <label for="Attendance">Class attendance (%)</label>
-            <input id="Attendance" name="Attendance" type="number" inputmode="decimal" step="any" placeholder="e.g. 85">
-            <div class="hint">Range 0–100 %</div><div class="err" role="alert"></div>
+            <label for="Attendance">Class attendance</label>
+            <div class="input-wrap"><input id="Attendance" name="Attendance" type="number" inputmode="decimal" step="any" placeholder="e.g. 85" aria-describedby="h-att e-att"><span class="unit">%</span></div>
+            <div class="hint" id="h-att">Accepted range 0–100</div><div class="err" id="e-att" role="alert"></div>
           </div>
           <div class="field" data-name="Previous_Scores">
             <label for="Previous_Scores">Previous exam score</label>
-            <input id="Previous_Scores" name="Previous_Scores" type="number" inputmode="decimal" step="any" placeholder="e.g. 75">
-            <div class="hint">Range 0–100 points</div><div class="err" role="alert"></div>
+            <div class="input-wrap"><input id="Previous_Scores" name="Previous_Scores" type="number" inputmode="decimal" step="any" placeholder="e.g. 75" aria-describedby="h-prev e-prev"><span class="unit">/ 100</span></div>
+            <div class="hint" id="h-prev">Accepted range 0–100</div><div class="err" id="e-prev" role="alert"></div>
           </div>
           <div class="field" data-name="Tutoring_Sessions">
-            <label for="Tutoring_Sessions">Tutoring sessions per month</label>
-            <input id="Tutoring_Sessions" name="Tutoring_Sessions" type="number" inputmode="numeric" step="1" placeholder="e.g. 2">
-            <div class="hint">Range 0–20 sessions</div><div class="err" role="alert"></div>
+            <label for="Tutoring_Sessions">Tutoring sessions</label>
+            <div class="input-wrap"><input id="Tutoring_Sessions" name="Tutoring_Sessions" type="number" inputmode="numeric" step="1" placeholder="e.g. 2" aria-describedby="h-tut e-tut"><span class="unit">per month</span></div>
+            <div class="hint" id="h-tut">Whole number, 0–20</div><div class="err" id="e-tut" role="alert"></div>
           </div>
-          <div class="field full" data-name="Access_to_Resources">
-            <label for="Access_to_Resources">Access to study resources (books, internet, quiet space)</label>
-            <select id="Access_to_Resources" name="Access_to_Resources">
-              <option value="" selected>Choose Low, Medium or High</option>
-              <option>Low</option><option>Medium</option><option>High</option>
-            </select>
-            <div class="err" role="alert"></div>
-          </div>
+          <fieldset class="field full" data-name="Access_to_Resources" aria-describedby="e-res">
+            <legend>Access to study resources <span style="font-weight:500;color:var(--muted)">(books, internet, quiet space)</span></legend>
+            <div class="segments" role="radiogroup">
+              <input type="radio" id="res-Low" name="Access_to_Resources" value="Low"><label for="res-Low">Low</label>
+              <input type="radio" id="res-Medium" name="Access_to_Resources" value="Medium"><label for="res-Medium">Medium</label>
+              <input type="radio" id="res-High" name="Access_to_Resources" value="High"><label for="res-High">High</label>
+            </div>
+            <div class="err" id="e-res" role="alert"></div>
+          </fieldset>
         </div>
-        <button type="submit" id="submit">Predict Exam Score</button>
+        <button type="submit" id="submit"><span class="spinner" aria-hidden="true"></span><span class="btn-label">Predict Exam Score</span></button>
       </form>
 
-      <div id="result" class="result empty" aria-live="polite">
-        <h2>Estimated Exam Score</h2>
-        <p id="result-body">Fill in all five fields and press <b>Predict Exam Score</b>. Your estimate will appear here.</p>
+      <aside class="result" id="result" aria-live="polite" aria-labelledby="result-title">
+        <h2 id="result-title">Estimated Exam Score</h2>
+        <div class="state empty" id="state">
+          <div class="empty-art" aria-hidden="true">?</div>
+          <p>Fill in your study profile and press <b>Predict Exam Score</b>. Your estimate will appear here.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <section class="block" id="how">
+    <div class="wrap">
+      <p class="kicker">How it works</p>
+      <h2>From your inputs to an estimate</h2>
+      <p class="section-lead">The website sends your five answers to its server, which runs the model trained in our Google Colab notebook.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><h3>You enter your profile</h3><p>The page checks every field first, so only complete, in-range values are sent.</p></div>
+        <div class="step"><div class="step-num">2</div><h3>The server loads the model</h3><p>It opens <code>model.joblib</code>, a scikit-learn pipeline that fills blanks with training medians and one-hot encodes resource access.</p></div>
+        <div class="step"><div class="step-num">3</div><h3>Linear regression predicts</h3><p>Each input adds or removes points. Attendance and weekly study hours have the biggest effect.</p></div>
       </div>
+      <div class="metrics" aria-label="Test results">
+        <div class="metric hl"><b>1.11</b><small>Mean absolute error (points)</small></div>
+        <div class="metric"><b>2.76</b><small>Error if we always guessed the average</small></div>
+        <div class="metric"><b>0.71</b><small>R² on unseen students</small></div>
+        <div class="metric"><b>1,322</b><small>Students in the held-out test set</small></div>
+      </div>
+      <div class="note-box"><b>Limitation:</b> a few students score far above what these five inputs suggest, and the data only covers 60–100% attendance and 1–44 study hours per week, so estimates outside those ranges are less reliable.</div>
     </div>
   </section>
 
-  <section id="how">
-    <h3>How it works</h3>
-    <ol>
-      <li>When you press the button, your five inputs are sent to the website's server.</li>
-      <li>The server loads <code>model.joblib</code>, the scikit-learn pipeline trained in our Google Colab notebook. It fills any blank with the training median, one-hot encodes <i>Access to resources</i>, and applies a <b>linear regression</b> model.</li>
-      <li>The model was trained on 80% of 6,606 student records and tested on the other 20%.</li>
-    </ol>
-    <table>
-      <tr><th>Held-out test set</th><th>Result</th></tr>
-      <tr><td>Mean absolute error (MAE)</td><td><b>1.11 points</b></td></tr>
-      <tr><td>MAE if we always guessed the average</td><td>2.76 points</td></tr>
-      <tr><td>R²</td><td>0.71</td></tr>
-      <tr><td>Predictions within ±2 points</td><td>87%</td></tr>
-    </table>
-    <p><b>Biggest effects:</b> attendance and weekly study hours. <b>Limitation:</b> a few students score far above what these five inputs suggest, and the data only covers 60–100% attendance and 1–44 study hours, so estimates outside those ranges are less reliable.</p>
-  </section>
-
-  <section id="about">
-    <h3>About</h3>
-    <ul>
-      <li><b>Purpose:</b> help students see how study habits relate to exam results. It's a planning aid, not an official grade.</li>
-      <li><b>Dataset:</b> <a href="https://www.kaggle.com/datasets/lainguyn123/student-performance-factors" target="_blank" rel="noopener">Student Performance Factors – Kaggle</a></li>
-      <li><b>Tools:</b> Python, pandas, scikit-learn, Google Colab, Flask, Vercel.</li>
-      <li><b>Source code:</b> <a href="https://github.com/alaedinbengayes/studycast" target="_blank" rel="noopener">github.com/alaedinbengayes/studycast</a></li>
-    </ul>
+  <section class="block" id="about">
+    <div class="wrap">
+      <p class="kicker">About</p>
+      <h2>A CSCI104 Introduction to AI project</h2>
+      <p class="section-lead">StudyCast helps students see how their study habits relate to exam results. It's a planning aid, not an official grade.</p>
+      <div class="about">
+        <div class="step"><h3>Dataset</h3><p><a href="https://www.kaggle.com/datasets/lainguyn123/student-performance-factors" target="_blank" rel="noopener">Student Performance Factors</a> on Kaggle: 6,607 records with study habits and exam scores.</p></div>
+        <div class="step"><h3>Tools</h3><p>Python, pandas, scikit-learn and Google Colab for the model. Flask and Vercel for the website.</p></div>
+        <div class="step"><h3>Source code</h3><p>All code and the training notebook are on <a href="https://github.com/alaedinbengayes/studycast" target="_blank" rel="noopener">GitHub</a>.</p></div>
+      </div>
+    </div>
   </section>
 </main>
 
-<footer><div class="wrap">CSCI104 Introduction to AI · University of Khorfakkan · Class project. Use fictional inputs.</div></footer>
+<footer>
+  <div class="wrap">
+    <div class="foot-brand">
+      <img src="/static/ukf-logo.png" alt="" width="44" height="44">
+      <div><b>University of Khorfakkan</b><br>College of Computing and Intelligent Systems</div>
+    </div>
+    <div>CSCI104 student project by Malak Ben Gayes · Not an official university service.</div>
+  </div>
+</footer>
 
 <script>
 const RULES = {
-  Hours_Studied:     { lo: 0, hi: 60,  train: [1, 44],   label: "Study hours" },
-  Attendance:        { lo: 0, hi: 100, train: [60, 100], label: "Attendance" },
-  Previous_Scores:   { lo: 0, hi: 100, train: [50, 100], label: "Previous score" },
-  Tutoring_Sessions: { lo: 0, hi: 20,  train: [0, 8],    label: "Tutoring sessions", whole: true },
+  Hours_Studied:     { lo: 0, hi: 60,  train: [1, 44],   label: "study hours" },
+  Attendance:        { lo: 0, hi: 100, train: [60, 100], label: "attendance" },
+  Previous_Scores:   { lo: 0, hi: 100, train: [50, 100], label: "previous score" },
+  Tutoring_Sessions: { lo: 0, hi: 20,  train: [0, 8],    label: "tutoring sessions", whole: true },
 };
+const FIELDS = Object.keys(RULES).concat("Access_to_Resources");
+const DATASET_MEAN = 67.2;
 const FAIL_MSG = "We couldn't calculate an estimate. Please try again.";
 const form = document.getElementById("form");
-const result = document.getElementById("result");
+const state = document.getElementById("state");
 const btn = document.getElementById("submit");
 const simulateFailure = new URLSearchParams(location.search).get("test") === "model-failure";
+
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 function setError(name, msg) {
   const f = form.querySelector(`.field[data-name="${name}"]`);
   f.classList.toggle("invalid", !!msg);
   f.querySelector(".err").textContent = msg ? "⚠ " + msg : "";
-  f.querySelector("input,select").setAttribute("aria-invalid", msg ? "true" : "false");
+  f.querySelectorAll("input").forEach(i => i.setAttribute("aria-invalid", msg ? "true" : "false"));
 }
 
 function validate() {
   const values = {}, errors = {};
   for (const [name, r] of Object.entries(RULES)) {
-    const raw = form.elements[name].value.trim();
+    const el = form.elements[name];
+    const raw = el.value.trim();
+    if (el.validity.badInput) { errors[name] = `Enter a valid number from ${r.lo} to ${r.hi}.`; continue; }
     if (raw === "") { errors[name] = `This field is required. Enter a number from ${r.lo} to ${r.hi}.`; continue; }
     const v = Number(raw);
-    if (!Number.isFinite(v)) errors[name] = `Enter a number from ${r.lo} to ${r.hi}.`;
+    if (!Number.isFinite(v)) errors[name] = `Enter a valid number from ${r.lo} to ${r.hi}.`;
     else if (v < r.lo || v > r.hi) errors[name] = `${v} is out of range. Enter a number from ${r.lo} to ${r.hi}.`;
     else if (r.whole && !Number.isInteger(v)) errors[name] = "Enter a whole number of sessions (e.g. 0, 1, 2).";
     else values[name] = v;
   }
-  const res = form.elements.Access_to_Resources.value;
+  const res = (form.querySelector('input[name="Access_to_Resources"]:checked') || {}).value;
   if (!["Low", "Medium", "High"].includes(res)) errors.Access_to_Resources = "Choose Low, Medium or High.";
   else values.Access_to_Resources = res;
   return { values, errors };
 }
 
-function showResult(kind, html) {
-  result.className = "result " + kind;
-  result.innerHTML = '<h2>Estimated Exam Score</h2>' + html;
-}
+function setState(kind, html) { state.className = "state " + kind; state.innerHTML = html; }
 
 function showErrors(errors) {
-  Object.keys(RULES).concat("Access_to_Resources").forEach(n => setError(n, errors[n]));
+  FIELDS.forEach(n => setError(n, errors[n]));
   const n = Object.keys(errors).length;
-  showResult("invalid", `<p>Please fix the ${n} highlighted field${n > 1 ? "s" : ""}. Your other values have been kept.</p>`);
-  const first = form.querySelector(".field.invalid input, .field.invalid select");
+  setState("invalid", `<div class="alert-icon" aria-hidden="true">!</div>
+    <p>Please fix the ${n} highlighted field${n > 1 ? "s" : ""}.</p><p>Your other values have been kept.</p>`);
+  const first = form.querySelector(".field.invalid input");
   if (first) first.focus();
+}
+
+function setLoading(on) {
+  btn.disabled = on;
+  btn.classList.toggle("loading", on);
+  btn.querySelector(".btn-label").textContent = on ? "Calculating…" : "Predict Exam Score";
+}
+
+function showScore(s, values) {
+  const C = 2 * Math.PI * 84;
+  const diff = s - DATASET_MEAN;
+  const cmp = Math.abs(diff) < 0.5 ? "About the same as the average student"
+            : `${Math.abs(diff).toFixed(1)} points ${diff > 0 ? "above" : "below"} the average student`;
+  const outside = Object.entries(RULES).filter(([n, r]) => values[n] < r.train[0] || values[n] > r.train[1]).map(([, r]) => r.label);
+  setState("ok", `
+    <div class="gauge">
+      <svg width="200" height="200" viewBox="0 0 200 200" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#0e538c"/><stop offset="1" stop-color="#d99a2b"/></linearGradient></defs>
+        <circle class="track" cx="100" cy="100" r="84" fill="none" stroke-width="16"/>
+        <circle class="bar" cx="100" cy="100" r="84" fill="none" stroke-width="16" stroke-dasharray="${C}" stroke-dashoffset="${C}"/>
+      </svg>
+      <div class="gauge-center"><div class="score">${s.toFixed(1)}</div><div class="score-unit">out of 100 points</div></div>
+    </div>
+    <div style="text-align:center"><span class="pill ${diff >= 0 ? "up" : "down"}">${cmp}</span></div>
+    <div class="facts">
+      <div class="fact"><small>Likely range</small><b>${Math.max(0, Math.round(s - 2))}–${Math.min(100, Math.round(s + 2))} points</b></div>
+      <div class="fact"><small>Typical model error</small><b>±1.1 points</b></div>
+    </div>` +
+    (outside.length ? `<div class="warn">Some inputs (${esc(outside.join(", "))}) are outside the range the model learned from, so treat this estimate with extra caution.</div>` : ""));
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const bar = state.querySelector(".bar");
+    if (bar) bar.style.strokeDashoffset = C * (1 - s / 100);
+  }));
 }
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  if (btn.disabled) return;
   const { values, errors } = validate();
   if (Object.keys(errors).length) { showErrors(errors); return; }
-  Object.keys(RULES).concat("Access_to_Resources").forEach(n => setError(n, null));
-  showResult("empty", "<p>Calculating…</p>");          // clear any previous result first
-  btn.disabled = true;
+  FIELDS.forEach(n => setError(n, null));
+  setState("empty", `<div class="empty-art" aria-hidden="true">…</div><p>Calculating your estimate…</p>`); // clear any old result first
+  setLoading(true);
   try {
     const resp = await fetch("/api/predict", {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -216,25 +398,22 @@ form.addEventListener("submit", async (e) => {
     });
     const data = await resp.json().catch(() => ({}));
     if (resp.status === 400 && data.errors) { showErrors(data.errors); return; }
-    if (!resp.ok || !data.ok) throw new Error(data.message || "failed");
-    const s = data.score;
-    const outside = Object.entries(RULES).filter(([n, r]) => values[n] < r.train[0] || values[n] > r.train[1]).map(([, r]) => r.label);
-    showResult("ok",
-      `<div class="score">${s.toFixed(1)} <small>/ 100 points</small></div>
-       <p class="note">Likely range: <b>${Math.max(0, Math.round(s - 2))}–${Math.min(100, Math.round(s + 2))}</b> points.
-       The model's typical error on unseen students is ±1.1 points.</p>` +
-      (outside.length ? `<div class="warn">Some inputs are outside the range the model learned from (${outside.join(", ")}), so treat this estimate with extra caution.</div>` : ""));
+    if (!resp.ok || !data.ok || typeof data.score !== "number") throw new Error("failed");
+    showScore(data.score, values);
   } catch (err) {
-    showResult("fail", `<p>${FAIL_MSG}</p>`);
+    setState("fail", `<div class="alert-icon" aria-hidden="true">×</div><p>${FAIL_MSG}</p><p>Your inputs are still in the form.</p>`);
   } finally {
-    btn.disabled = false;
+    setLoading(false);
   }
 });
 
-form.addEventListener("input", (e) => {   // clear a field's error as soon as the user edits it
+// clear a field's error as soon as the user changes it
+form.addEventListener("input", (e) => {
   const f = e.target.closest(".field");
   if (f && f.classList.contains("invalid")) setError(f.dataset.name, null);
 });
+// stop the mouse wheel from silently changing a focused number
+form.addEventListener("wheel", (e) => { if (e.target.type === "number" && document.activeElement === e.target) e.target.blur(); }, { passive: true });
 </script>
 </body>
 </html>

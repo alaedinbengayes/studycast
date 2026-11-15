@@ -3,6 +3,7 @@
 Flask web app: serves the page and a /api/predict endpoint that runs the
 scikit-learn model trained in notebook/Exam_Score_Model.ipynb (model.joblib).
 """
+import math
 from pathlib import Path
 
 import joblib
@@ -10,7 +11,7 @@ import pandas as pd
 from flask import Flask, jsonify, render_template, request
 
 BASE = Path(__file__).parent
-app = Flask(__name__, template_folder=str(BASE / "templates"))
+app = Flask(__name__, template_folder=str(BASE / "templates"), static_folder=str(BASE / "static"))
 
 # name -> (accepted min, accepted max, whole number?)
 NUMERIC = {
@@ -39,9 +40,13 @@ def validate(data):
             errors[name] = f"This field is required. Enter a number from {lo} to {hi}."
             continue
         try:
+            if isinstance(raw, bool):  # true/false are not numbers
+                raise ValueError
             v = float(raw)
+            if not math.isfinite(v):  # rejects NaN and infinity
+                raise ValueError
         except (TypeError, ValueError):
-            errors[name] = f"Enter a number from {lo} to {hi}."
+            errors[name] = f"Enter a valid number from {lo} to {hi}."
             continue
         if not lo <= v <= hi:
             errors[name] = f"{v:g} is out of range. Enter a number from {lo} to {hi}."
@@ -63,12 +68,14 @@ def index():
 
 @app.post("/api/predict")
 def predict():
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):  # body was missing, not JSON, or not a JSON object
+        data = {}
     clean, errors = validate(data)
     if errors:
         return jsonify(ok=False, errors=errors), 400
     try:
-        if data.get("simulate_failure"):  # used only for test 4 in the report
+        if data.get("simulate_failure") is True:  # used only for test 4 in the report
             raise RuntimeError("Simulated model failure")
         row = pd.DataFrame([clean])[list(NUMERIC) + ["Access_to_Resources"]]
         score = float(get_model().predict(row)[0])
